@@ -1,0 +1,32 @@
+name: V4 H1 RR BACKTEST 12 24 36
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install numpy pandas requests yfinance lxml html5lib
+      - name: Run V4 backtest 12 24 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          for bars in 12 24 36; do
+            echo "========== BACKTEST ${bars} BARS =========="
+            BT_MAX_HOLD_BARS="$bars" python V4_H1_RR_BACKTEST_5_METHODS.py
+            mv "backtest_results/V4_H1_RR_comparison.csv" "backtest_results/V4_H1_RR_${bars}bars.csv"
+          done
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V4-H1-RR-12-24-36-results
+          path: backtest_results/
+          if-no-files-found: warn
