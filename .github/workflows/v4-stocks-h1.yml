@@ -3,7 +3,7 @@ name: V4 STOCKS H1 REVERSAL
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5,35 14-21 * * 1-5'
+   - cron:  '45 14-22 * * 1-5'   
 
 permissions:
   contents: read
@@ -22,4 +22,4 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python v4_stocks_h1-2-1.py
+        run: python v4_stocks_h1-2-1_FIXED.py
