@@ -1,0 +1,25 @@
+name: V4 H1 RR BACKTEST
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install numpy pandas requests yfinance lxml html5lib
+      - name: Run V4 backtest
+        run: python V4_H1_RR_BACKTEST_5_METHODS.py
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V4-H1-RR-results
+          path: backtest_results/
+          if-no-files-found: warn
