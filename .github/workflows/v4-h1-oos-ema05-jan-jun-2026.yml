@@ -1,0 +1,30 @@
+name: V4 H1 OOS EMA05 Jan-Jun 2026
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  oos-backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pandas numpy yfinance requests beautifulsoup4 lxml pytz
+      - name: Run independent Jan-Jun 2026 historical comparison
+        env:
+          BT_MAX_HOLD_BARS: '12'
+          BT_MAX_SYMBOLS: '503'
+        run: python V4_H1_OOS_EMA05_JAN_JUN_2026.py
+      - name: Upload comparison and trades
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V4-H1-OOS-JAN-JUN-2026-EMA05
+          path: backtest_results/V4_H1_OOS_JAN_JUN_2026_*.csv
+          if-no-files-found: warn
