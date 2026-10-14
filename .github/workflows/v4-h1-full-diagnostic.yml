@@ -1,0 +1,35 @@
+name: V4 H1 Full Diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pandas numpy yfinance requests beautifulsoup4 lxml pytz
+      - name: Run full diagnostic for 12 24 36 bars
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p backtest_results
+          for bars in 12 24 36; do
+            echo "========= DIAGNOSTIC ${bars} BARS ========="
+            BT_MAX_HOLD_BARS="$bars" python V4_H1_FULL_DIAGNOSTIC_BACKTEST.py
+            mv backtest_results/V4_H1_FULL_DIAGNOSTIC.csv "backtest_results/V4_H1_DIAGNOSTIC_${bars}bars.csv"
+          done
+      - name: Upload diagnostic results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V4-H1-FULL-DIAGNOSTIC-12-24-36
+          path: backtest_results/*.csv
+          if-no-files-found: warn
